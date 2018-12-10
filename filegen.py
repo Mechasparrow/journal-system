@@ -35,8 +35,8 @@ class MarkdownJournalGen:
         f.close()
 
     def create_markdown_todo_entry(self, name):
-        self.create_markdown_entry(name, './templates/todo.template')
+        self.create_markdown_entry(name, './templates/todo.md')
         pass
 
     def create_markdown_regular_entry(self, name):
-        self.create_markdown_entry(name, './templates/journal.template')
+        self.create_markdown_entry(name, './templates/journal.md')
