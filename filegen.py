@@ -1,4 +1,5 @@
 from datetime import datetime
+from string import Template
 
 # Util Function
 def uncomplete_date_string(tz=None):
@@ -20,13 +21,22 @@ class MarkdownJournalGen:
         self.working_dir = working_dir
         self.author = author
 
-    def create_markdown_entry(self, name):
+    def create_markdown_entry(self, name, template_file_path):
         extension = ".md"
         date_string = uncomplete_date_string()
-        template_text = '''---\n''' + "Date: " + date_string + "\n" + "Author: " + self.author + "\n" + '''---\n'''
+        template_file = open(template_file_path, 'r')
+        template = Template(template_file.read())
+        template_text = template.substitute(date = date_string, author = self.author)
 
         entry_file_name = general_file_entry_name(name) + extension
 
         f = open(self.working_dir + entry_file_name, "w")
         f.write(template_text)
         f.close()
+
+    def create_markdown_todo_entry(self, name):
+        self.create_markdown_entry(name, './templates/todo.template')
+        pass
+
+    def create_markdown_regular_entry(self, name):
+        self.create_markdown_entry(name, './templates/journal.template')
