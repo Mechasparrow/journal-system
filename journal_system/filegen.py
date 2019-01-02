@@ -1,5 +1,9 @@
 from datetime import datetime
 from string import Template
+import sys
+import os
+
+JOURNAL_PATH = os.path.dirname(os.path.realpath(__file__))
 
 # Util Function
 def uncomplete_date_string(tz=None):
@@ -35,8 +39,8 @@ class MarkdownJournalGen:
         f.close()
 
     def create_markdown_todo_entry(self, name):
-        self.create_markdown_entry(name, './templates/todo.md')
+        self.create_markdown_entry(name, JOURNAL_PATH + '/templates/todo.md')
         pass
 
     def create_markdown_regular_entry(self, name):
-        self.create_markdown_entry(name, './templates/journal.md')
+        self.create_markdown_entry(name, JOURNAL_PATH + '/templates/journal.md')

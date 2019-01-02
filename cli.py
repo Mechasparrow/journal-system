@@ -1,4 +1,4 @@
-from filegen import MarkdownJournalGen
+from journal_system import MarkdownJournalGen
 import json
 
 def test():
