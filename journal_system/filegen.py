@@ -17,8 +17,6 @@ def general_file_entry_name(entry_name):
     complete_filename = formatted_time_pre + "_" + entry_name
     return complete_filename
 
-
-
 class MarkdownJournalGen:
 
     def __init__(self, working_dir, author):
