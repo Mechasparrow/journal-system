@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class = "list-posts">
+  {% for post in posts %}
+    <div class = "card card-post">
+      <div class = "card-content">
+        <p>{{post}}</p>
+        <a href = "/view-post/{{post}}"> View Post</a>
+      </div>
+    </div>
+  {% endfor %}
+</div>
+
+{% endblock %}

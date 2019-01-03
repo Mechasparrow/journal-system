@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class = "new-post">
+  <h1>Create New Post</h1>
+
+  <!-- Dummy TODO double check -->
+
+  <form>
+    <div class = "form-group">
+      <label>Post Title: </label>
+      <input class = "form-control" name = "post_title" type = "text">
+    </div>
+
+    <!-- TODO Markdown editor https://github.com/justinmc/markdown-html-form -->
+    <!-- ^^^ Uses Jquery yeah -->
+    <!-- Or this one https://simplemde.com/ -->
+    <div class = "form-group">
+      <label>Content: </label>
+      <textarea class = "form-control" name = "content"></textarea>
+    </div>
+
+    <input type = "submit" class = "btn btn-primary">
+  </form>
+
+
+</div>
+
+{% endblock %}

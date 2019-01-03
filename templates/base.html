@@ -1,0 +1,10 @@
+{% include 'header.html' without context %}
+{% include 'nav.html' without context %}
+
+<div class = "container-fluid">
+  <div class = "content">
+    {% block content %}{% endblock %}
+  </div>
+</div>
+
+{% include 'bottom.html' without context %}
