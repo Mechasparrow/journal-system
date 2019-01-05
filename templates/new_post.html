@@ -7,10 +7,12 @@
 
   <!-- Dummy TODO double check -->
 
-  <form>
+  <form method = "POST">
+    {{form.csrf_token}}
+
     <div class = "form-group">
       <label>Post Title: </label>
-      <input class = "form-control" name = "post_title" type = "text">
+      <input class = "form-control" name = "title" type = "text">
     </div>
 
     <!-- TODO Markdown editor https://github.com/justinmc/markdown-html-form -->

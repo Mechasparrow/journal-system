@@ -1,14 +1,23 @@
 import webbrowser
-from flask import Flask, render_template
+from flask import Flask, render_template, request, redirect
 from api_system import api_page
 import api_system
 
+# forms
+from forms import PostForm
+
+# markdown handling
 import markdown
 from flask import Markup
 import frontmatter
 
 app = Flask(__name__)
 app.register_blueprint(api_page)
+
+# PUT in config later BAD
+app.secret_key = b'1234'
+
+# form testing
 
 @app.route('/')
 def hello_world():
@@ -27,9 +36,29 @@ def view_post(post_name):
     return render_template('view_post.html', post_data = raw_post_data, metadata = metadata, content = html_content)
 
 # TODO get and post requests
-@app.route('/new-post')
+@app.route('/new-post', methods=['GET', 'POST'])
 def new_post():
-    return render_template('new_post.html')
+    form = PostForm()
+    if (request.method == 'GET'):
+        return render_template('new_post.html', form = form)
+    elif (request.method == 'POST'):
+        if form.validate_on_submit():
+
+            # TODO create our post file
+            api_system.gen_post(form.title.data, form.content.data, "regular")
+            #
+
+            return redirect('/post-success')
+        else:
+            return redirect('/post-failure')
+
+@app.route('/post-success')
+def post_created():
+    return render_template('post_created.html')
+
+@app.route('/post-failure')
+def post_failed():
+    return render_template('post_failed.html')
 
 browser_active = False
 

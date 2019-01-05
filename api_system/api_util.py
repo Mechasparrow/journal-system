@@ -31,17 +31,21 @@ def get_post_raw(post_file):
     except FileNotFoundError:
         return None
 
+def gen_post_empty(doc_name, type):
+    gen_post(doc_name, "", type)
+
 # TODO generate the post with some options
-def gen_post(doc_name, type):
+def gen_post(doc_name, content, type):
     mdJg = MarkdownJournalGen(config['working_dir'], config['author'])
     what_kind = type
     entry_name = doc_name
 
     if (what_kind == 'todo'):
-        mdJg.create_markdown_todo_entry(entry_name)
+        mdJg.create_markdown_todo_entry(entry_name, content)
         pass
     else:
-        mdJg.create_markdown_regular_entry(entry_name)
+        mdJg.create_markdown_regular_entry(entry_name, content)
         pass
 
-    print ("entry created at " + config['working_dir'])
+
+        print ("entry created at " + config['working_dir'])

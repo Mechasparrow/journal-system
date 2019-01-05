@@ -23,11 +23,9 @@ def run():
     what_kind = input("What kind of entry: (regular, todo): ")
 
     if (what_kind == 'todo'):
-        mdJg.create_markdown_todo_entry(entry_name)
-        pass
+        mdJg.create_markdown_todo_entry(entry_name, content = "")
     else:
-        mdJg.create_markdown_regular_entry(entry_name)
-        pass
+        mdJg.create_markdown_regular_entry(entry_name, content = "")
 
     print ("entry created at " + config['working_dir'])
 
