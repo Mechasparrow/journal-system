@@ -26,7 +26,25 @@ def hello_world():
 @app.route('/list-posts')
 def list_posts():
     posts = api_system.list_posts()
-    return render_template('list_posts.html', posts = posts)
+
+    parsed_posts = []
+    for post in posts:
+        metadata, content = frontmatter.parse(api_system.get_post_raw(post))
+
+        post_title = post
+
+        if ('Title' in metadata):
+            post_title = metadata['Title']
+
+        parsed_posts.append({
+            'metadata': metadata,
+            'title': post_title,
+            'file_name': post,
+            'content': content
+        })
+
+
+    return render_template('list_posts.html', posts = parsed_posts)
 
 @app.route('/view-post/<string:post_name>')
 def view_post(post_name):
