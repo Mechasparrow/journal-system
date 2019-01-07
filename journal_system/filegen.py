@@ -28,7 +28,7 @@ class MarkdownJournalGen:
         date_string = uncomplete_date_string()
         template_file = open(template_file_path, 'r')
         template = Template(template_file.read())
-        template_text = template.substitute(date = date_string, author = self.author)
+        template_text = template.substitute(title = name, date = date_string, author = self.author)
 
         entry_file_name = general_file_entry_name(name) + extension
 
