@@ -1,5 +1,6 @@
 import json
 import os
+import frontmatter
 
 from journal_system import MarkdownJournalGen
 
@@ -20,6 +21,29 @@ def list_posts():
     arr = os.listdir(path)
     selected_documents = list(filter(lambda file: file.endswith('.md'), arr))
     return selected_documents
+
+# returns formatted posts
+def get_formatted_posts():
+
+    posts = list_posts()
+
+    parsed_posts = []
+    for post in posts:
+        metadata, content = frontmatter.parse(get_post_raw(post))
+
+        post_title = post
+
+        if ('Title' in metadata):
+            post_title = metadata['Title']
+
+        parsed_posts.append({
+            'metadata': metadata,
+            'title': post_title,
+            'file_name': post,
+            'content': content
+        })
+
+    return parsed_posts
 
 def get_post_raw(post_file):
     try:
