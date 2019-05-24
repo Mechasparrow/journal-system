@@ -2,6 +2,7 @@ import webbrowser
 from flask import Flask, render_template, request, redirect
 from api_system import api_page
 import api_system
+import math
 
 # forms
 from forms import PostForm
@@ -14,17 +15,13 @@ import frontmatter
 app = Flask(__name__)
 app.register_blueprint(api_page)
 
-# PUT in config later BAD
-app.secret_key = b'1234'
+# Load in config
+app.config.from_envvar('JOURNAL_SETTINGS')
 
-# form testing
+# Util functions
+# returns formatted posts
+def get_formatted_posts():
 
-@app.route('/')
-def hello_world():
-    return render_template('index.html')
-
-@app.route('/list-posts')
-def list_posts():
     posts = api_system.list_posts()
 
     parsed_posts = []
@@ -43,9 +40,61 @@ def list_posts():
             'content': content
         })
 
+    return parsed_posts
 
-    return render_template('list_posts.html', posts = parsed_posts)
+# Home route
+@app.route('/')
+def home():
+    # Profile data
+    profile_data = api_system.load_config()
 
+    profile = {
+        'name': profile_data['author']
+    }
+
+
+    # Post data
+    formatted_posts = get_formatted_posts()
+
+    #NOTE may need to filter by date first
+    recent_posts = formatted_posts[0:3]
+
+
+    return render_template('index.html', recent_posts = recent_posts, profile = profile)
+
+# Post List route
+@app.route('/list-posts/', defaults = {'page': 1})
+@app.route('/list-posts/<int:page>')
+def list_posts(page):
+
+    # Retrieve formatted posts
+    parsed_posts = get_formatted_posts()
+
+    # NOTE Can be modified later
+
+    # represents amount of posts per page
+    amnt_per_page = 5
+
+    # Pages to show centered around the active page
+    pages_to_show = 2
+
+    # total posts
+    post_count = len(parsed_posts)
+
+    # amount of pages
+    page_count = math.ceil(post_count/amnt_per_page)
+
+    if (page != 0):
+        starting_page_index = (page - 1) * amnt_per_page
+        ending_page_index = starting_page_index + amnt_per_page
+        page_posts = parsed_posts[starting_page_index: ending_page_index]
+    else:
+        page_posts = parsed_posts
+
+    # Render the template
+    return render_template('list_posts.html', pages = page_count, current_page = page, pages_to_show = pages_to_show, posts = page_posts)
+
+# View specific post
 @app.route('/view-post/<string:post_name>')
 def view_post(post_name):
     raw_post_data = api_system.get_post_raw(post_name)
@@ -53,7 +102,7 @@ def view_post(post_name):
     html_content = Markup(markdown.markdown(content))
     return render_template('view_post.html', post_data = raw_post_data, metadata = metadata, content = html_content)
 
-# TODO get and post requests
+# Create and Submit Posts
 @app.route('/new-post', methods=['GET', 'POST'])
 def new_post():
     form = PostForm()
@@ -62,14 +111,14 @@ def new_post():
     elif (request.method == 'POST'):
         if form.validate_on_submit():
 
-            # TODO create our post file
+            # create our post file
             api_system.gen_post(form.title.data, form.content.data, "regular")
-            #
 
             return redirect('/post-success')
         else:
             return redirect('/post-failure')
 
+# Success and failure pages
 @app.route('/post-success')
 def post_created():
     return render_template('post_created.html')
@@ -78,17 +127,6 @@ def post_created():
 def post_failed():
     return render_template('post_failed.html')
 
-browser_active = False
-
+# If server script ran individually
 if __name__ == "__main__":
-    if (browser_active):
-        url = 'http://localhost:5000'
-        # Open URL in new window, raising the window if possible.
-        webbrowser.open_new(url)
-
-    app.run(debug=True)
-
-    #from gevent.pywsgi import WSGIServer
-    #http_server = WSGIServer(('', 5000), app)
-    #print ("hosting server on port 5000")
-    #http_server.serve_forever()
+    app.run()

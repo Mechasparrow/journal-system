@@ -1,7 +1,25 @@
 {% extends 'base.html' %}
+{% from "post_card.html" import post_card with context %}
+
 
 {% block content %}
-<h1>
-  Hello, friend
-</h1>
+  <!-- Welcome Dialogue -->
+  <h1>
+    Hello, {{profile.name}}
+  </h1>
+  <p>Here are some of your latest entries..</p>
+
+  <!-- Recent posts -->
+  <div class = "list-posts">
+
+    {% if recent_posts|length <= 0 %}
+      <p>No recent posts</p>
+    {% endif %}
+
+    {% for post in recent_posts %}
+      {{post_card(post)}}
+    {% endfor %}
+
+  </div>
+  <a class = "btn btn-primary" href = "/list-posts">View more</a>
 {% endblock %}

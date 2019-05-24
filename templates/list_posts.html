@@ -1,20 +1,67 @@
 {% extends 'base.html' %}
-
+{% from "post_card.html" import post_card with context %}
 {% block content %}
 
-<div class = "list-posts">
-  {% if posts|length <= 0 %}
-    <p>No posts</p>
-  {% endif %}
+  <h1>Page {{current_page}} </h1>
 
-  {% for post in posts %}
-    <div class = "card card-post">
-      <div class = "card-content">
-        <p>{{post.title}}</p>
-        <a href = "/view-post/{{post}}"> View Post</a>
-      </div>
-    </div>
-  {% endfor %}
-</div>
+  <!-- List out all the posts -->
+  <div class = "list-posts">
+
+    {% if posts|length <= 0 %}
+      <p>No posts</p>
+    {% endif %}
+
+    {% for post in posts %}
+      {{post_card(post)}}
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  <ul class="pagination">
+
+    <!-- Previous button -->
+    {% if current_page == 1 %}
+      <li class="page-item disabled">
+    {% else %}
+      <li class = "page-item">
+    {% endif %}
+        <a class="page-link" href="/list-posts/{{current_page-1}}">Previous</a>
+    </li>
+
+    <!-- Pages not visible -->
+    {% if current_page - pages_to_show > 0 %}
+      <li class = "page-item disabled"><a class = "page-link" href = "#">...</a></li>
+    {% endif %}
+
+
+    <!-- Iterate through all the pages -->
+    {% for i in range(current_page - pages_to_show - 1, current_page + pages_to_show) %}
+      {% if (i+1) > 0 and (i+1) <= pages %}
+        {% if (i+1) == current_page %}
+          <li class="page-item active">
+        {% else %}
+          <li class="page-item">
+        {% endif %}
+          <a class="page-link" href="/list-posts/{{i+1}}">{{i+1}}</a>
+        </li>
+      {% endif %}
+    {% endfor %}
+
+    <!-- Pages not visible -->
+    {% if current_page + pages_to_show <= pages %}
+      <li class = "page-item disabled"><a class = "page-link" href = "#">...</a></li>
+    {% endif %}
+    
+    <!-- Next button -->
+    {% if current_page == pages %}
+      <li class="page-item disabled">
+    {% else %}
+      <li class = "page-item">
+    {% endif %}
+        <a class="page-link" href="/list-posts/{{current_page+1}}">Next</a>
+    </li>
+
+
+  </ul>
 
 {% endblock %}
