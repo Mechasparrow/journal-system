@@ -2,6 +2,7 @@
 config.py
 /_config/config.json
 settings.cfg
+/database/test.db
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

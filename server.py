@@ -1,14 +1,16 @@
-import webbrowser
 from flask import Flask, render_template, request, redirect
+import webbrowser
 from api_system import api_page
 import api_system
 import math
 
+from database.database import db_session
+
 # forms
 from forms import PostForm
 
-# markdown handling
 import markdown
+# markdown handling
 from flask import Markup
 import frontmatter
 
@@ -126,6 +128,11 @@ def post_created():
 @app.route('/post-failure')
 def post_failed():
     return render_template('post_failed.html')
+
+# When the server goes down, disconnect from the database session
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    db_session.remove()
 
 # If server script ran individually
 if __name__ == "__main__":
