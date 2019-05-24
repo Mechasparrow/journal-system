@@ -1,8 +1,15 @@
+/* General Content */
 .content {
   margin-top: 16px;
 }
 
+/* Cards */
 .card.card-post {
   padding: 8px;
   margin-bottom: 16px;
+}
+
+/* Navbar */
+.nav-link {
+  font-size: 1.5em;
 }
