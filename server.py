@@ -1,66 +1,46 @@
+# Flask lib
 from flask import Flask, render_template, request, redirect
 import webbrowser
-from api_system import api_page
-import api_system
+
+# Math lib
 import math
 
+# Database handling
 from database.database import db_session
+
+# API
+import api_system.api_post as api_post
+import api_system.api_util as api_util
 
 # forms
 from forms import PostForm
 
-import markdown
 # markdown handling
 from flask import Markup
+import markdown
 import frontmatter
 
+
 app = Flask(__name__)
-app.register_blueprint(api_page)
 
 # Load in config
 app.config.from_envvar('JOURNAL_SETTINGS')
-
-# Util functions
-# returns formatted posts
-def get_formatted_posts():
-
-    posts = api_system.list_posts()
-
-    parsed_posts = []
-    for post in posts:
-        metadata, content = frontmatter.parse(api_system.get_post_raw(post))
-
-        post_title = post
-
-        if ('Title' in metadata):
-            post_title = metadata['Title']
-
-        parsed_posts.append({
-            'metadata': metadata,
-            'title': post_title,
-            'file_name': post,
-            'content': content
-        })
-
-    return parsed_posts
 
 # Home route
 @app.route('/')
 def home():
     # Profile data
-    profile_data = api_system.load_config()
+    profile_data = api_util.load_config()
 
     profile = {
         'name': profile_data['author']
     }
 
-
     # Post data
-    formatted_posts = get_formatted_posts()
+    formatted_posts = api_post.get_formatted_posts()
 
     #NOTE may need to filter by date first
     recent_posts = formatted_posts[0:3]
-
 
     return render_template('index.html', recent_posts = recent_posts, profile = profile)
 
@@ -68,9 +48,8 @@ def home():
 @app.route('/list-posts/', defaults = {'page': 1})
 @app.route('/list-posts/<int:page>')
 def list_posts(page):
-
     # Retrieve formatted posts
-    parsed_posts = get_formatted_posts()
+    parsed_posts = api_post.get_formatted_posts()
 
     # NOTE Can be modified later
 
@@ -97,12 +76,16 @@ def list_posts(page):
     return render_template('list_posts.html', pages = page_count, current_page = page, pages_to_show = pages_to_show, posts = page_posts)
 
 # View specific post
-@app.route('/view-post/<string:post_name>')
-def view_post(post_name):
-    raw_post_data = api_system.get_post_raw(post_name)
-    metadata,content = frontmatter.parse(raw_post_data)
+@app.route('/view-post/<int:post_id>')
+def view_post(post_id):
+    retrieved_post = api_post.get_post(post_id)
+    print(retrieved_post)
+
+    # TODO retrieve post content
+    content = retrieved_post['content']
+
     html_content = Markup(markdown.markdown(content))
-    return render_template('view_post.html', post_data = raw_post_data, metadata = metadata, content = html_content)
+    return render_template('view_post.html', post_data = retrieved_post, content = html_content)
 
 # Create and Submit Posts
 @app.route('/new-post', methods=['GET', 'POST'])
@@ -114,7 +97,7 @@ def new_post():
         if form.validate_on_submit():
 
             # create our post file
-            api_system.gen_post(form.title.data, form.content.data, "regular")
+            api_post.save_post(form.title.data, form.content.data)
 
             return redirect('/post-success')
         else:
