@@ -87,6 +87,13 @@ def view_post(post_id):
     html_content = Markup(markdown.markdown(content))
     return render_template('view_post.html', post_data = retrieved_post, content = html_content)
 
+# Deletes a specific post
+@app.route('/delete-post/<int:post_id>', methods = ['DELETE'])
+def delete_post(post_id):
+    if (request.method == 'DELETE'):
+        api_post.remove_post(post_id)
+        return redirect('/')
+
 # Create and Submit Posts
 @app.route('/new-post', methods=['GET', 'POST'])
 def new_post():
